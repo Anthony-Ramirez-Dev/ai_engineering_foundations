@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-ai_engineering_foundations = "ai_engineering_foundations.main"
+ai_engineering_foundations = "ai_engineering_foundations.main:main"
 
 [build-system]
 requires = ["uv_build>=0.12.19,<0.13.0"]
