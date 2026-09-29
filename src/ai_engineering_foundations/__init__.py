@@ -1,2 +1,2 @@
-def main() -> None:
-    print("Hello from ai-engineering-foundations!")
+def greet(name: str) -> str:
+    return f"Welcom to AI Engineering, {name}!"

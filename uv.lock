@@ -8,7 +8,7 @@ resolution-markers = [
 ]
 
 [[package]]
-name = "ai-engineering-foundations"
+name = "ai_engineering_foundations"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
