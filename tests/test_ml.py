@@ -1,12 +1,78 @@
+import json
+
 import pandas as pd
 import pytest
 
 from ai_engineering_foundations.ml import (
     load_model,
+    load_model_metadata,
     prepare_ml_data,
     save_model,
     train_star_model,
+    validate_model_metadata,
 )
+
+
+def test_load_model_metadata(tmp_path):
+    metadata_path = tmp_path / "metadata.json"
+
+    metadata_path.write_text(
+        json.dumps(
+            {
+                "model_version": "1.0.0",
+                "model_type": "RandomForestRegressor",
+                "target": "stars",
+                "features": [
+                    "forks",
+                    "open_issues",
+                    "size",
+                    "archived",
+                    "has_issues",
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    metadata = load_model_metadata(str(metadata_path))
+
+    assert metadata["model_version"] == "1.0.0"
+    assert metadata["target"] == "stars"
+
+
+def test_validate_model_metadata():
+    metadata = {
+        "model_version": "1.0.0",
+        "model_type": "RandomForestRegressor",
+        "target": "stars",
+        "features": [
+            "forks",
+            "open_issues",
+            "size",
+            "archived",
+            "has_issues",
+        ],
+    }
+
+    validate_model_metadata(metadata)
+
+
+def test_validate_model_metadata_rejects_wrong_version():
+    metadata = {
+        "model_version": "99.0.0",
+        "model_type": "RandomForestRegressor",
+        "target": "stars",
+        "features": [
+            "forks",
+            "open_issues",
+            "size",
+            "archived",
+            "has_issues",
+        ],
+    }
+
+    with pytest.raises(ValueError):
+        validate_model_metadata(metadata)
 
 
 def test_save_and_load_model(tmp_path):

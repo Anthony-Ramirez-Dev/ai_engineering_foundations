@@ -3,10 +3,12 @@ from requests import RequestException
 from ai_engineering_foundations import greet
 from ai_engineering_foundations.ml import (
     load_model,
+    load_model_metadata,
     predict_stars,
     save_model,
     save_model_metadata,
     train_star_model,
+    validate_model_metadata,
 )
 from ai_engineering_foundations.report import create_markdown_report
 from ai_engineering_foundations.visualization import create_language_chart
@@ -33,9 +35,11 @@ def show_github_profile() -> None:
 
 def predict_repository_stars() -> None:
     try:
+        metadata = load_model_metadata()
+        validate_model_metadata(metadata)
         model = load_model()
-    except FileNotFoundError as error:
-        print(error)
+    except (FileNotFoundError, ValueError) as error:
+        print(f"Unable to load model safely: {error}")
         print("Train the model first using option 4.")
         return
 

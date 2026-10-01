@@ -58,6 +58,37 @@ def train_star_model(df: pd.DataFrame):
     return model, metrics
 
 
+def load_model_metadata(
+    metadata_path: str = "models/star_predictor.json",
+) -> dict:
+    path = Path(metadata_path)
+
+    if not path.exists():
+        raise FileNotFoundError(f"Metadata not found: {path}")
+
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def validate_model_metadata(metadata: dict) -> None:
+    if metadata.get("model_version") != MODEL_VERSION:
+        raise ValueError(
+            "model version mismatch: "
+            f"expected {MODEL_VERSION}, "
+            f"got {metadata.get('model_version')}"
+        )
+
+    if metadata.get("model_type") != "RandomForestRegressor":
+        raise ValueError(f"Unexpected model type: {metadata.get('model_type')}")
+
+    if metadata.get("target") != TARGET:
+        raise ValueError(
+            f"Model target mismatch: expected {TARGET}, got {metadata.get('target')}"
+        )
+
+    if metadata.get("features") != FEATURES:
+        raise ValueError("Model feature schema does not match the application.")
+
+
 def save_model(
     model: RandomForestRegressor,
     output_path: str = "models/star_predictor.joblib",
