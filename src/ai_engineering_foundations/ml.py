@@ -1,3 +1,6 @@
+from pathlib import Path
+
+import joblib
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, r2_score
@@ -49,3 +52,51 @@ def train_star_model(df: pd.DataFrame):
     }
 
     return model, metrics
+
+
+def save_model(
+    model: RandomForestRegressor,
+    output_path: str = "models/star_predictor.joblib",
+) -> Path:
+    output = Path(output_path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+
+    joblib.dump(model, output)
+
+    return output
+
+
+def load_model(
+    model_path: str = "models/star_predictor.joblib",
+) -> RandomForestRegressor:
+    path = Path(model_path)
+
+    if not path.exists():
+        raise FileNotFoundError(f"Model not found: {path}")
+
+    return joblib.load(path)
+
+
+def predict_stars(
+    model: RandomForestRegressor,
+    forks: int,
+    open_issues: int,
+    size: int,
+    archived: bool,
+    has_issues: bool,
+) -> float:
+    features = pd.DataFrame(
+        [
+            {
+                "forks": forks,
+                "open_issues": open_issues,
+                "size": size,
+                "archived": int(archived),
+                "has_issues": int(has_issues),
+            }
+        ]
+    )
+
+    predictions = model.predict(features)
+
+    return float(predictions[0])

@@ -1,7 +1,28 @@
 import pandas as pd
 import pytest
 
-from ai_engineering_foundations.ml import prepare_ml_data, train_star_model
+from ai_engineering_foundations.ml import (
+    load_model,
+    prepare_ml_data,
+    save_model,
+    train_star_model,
+)
+
+
+def test_save_and_load_model(tmp_path):
+    df = make_test_data()
+
+    model, _ = train_star_model(df)
+
+    model_path = tmp_path / "model.joblib"
+
+    saved_path = save_model(model, str(model_path))
+
+    assert saved_path.exists()
+
+    loaded_model = load_model(str(saved_path))
+
+    assert loaded_model is not None
 
 
 def make_test_data() -> pd.DataFrame:
