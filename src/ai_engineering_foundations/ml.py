@@ -1,3 +1,5 @@
+import json
+from datetime import UTC, datetime
 from pathlib import Path
 
 import joblib
@@ -5,6 +7,8 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
+
+MODEL_VERSION = "1.0.0"
 
 FEATURES = [
     "forks",
@@ -62,6 +66,33 @@ def save_model(
     output.parent.mkdir(parents=True, exist_ok=True)
 
     joblib.dump(model, output)
+
+    return output
+
+
+def save_model_metadata(
+    metrics: dict,
+    output_path: str = "models/star_predictor_metadata.json",
+) -> Path:
+    output = Path(output_path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+
+    metadata = {
+        "model_version": MODEL_VERSION,
+        "model_type": "RandomForestRegressor",
+        "target": TARGET,
+        "features": FEATURES,
+        "trained_at": datetime.now(UTC).isoformat(),
+        "training_samples": metrics["training_samples"],
+        "testing_samples": metrics["testing_samples"],
+        "mae": float(metrics["mae"]),
+        "r2": float(metrics["r2"]),
+    }
+
+    output.write_text(
+        json.dumps(metadata, indent=2),
+        encoding="utf-8",
+    )
 
     return output
 

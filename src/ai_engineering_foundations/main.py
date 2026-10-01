@@ -5,6 +5,7 @@ from ai_engineering_foundations.ml import (
     load_model,
     predict_stars,
     save_model,
+    save_model_metadata,
     train_star_model,
 )
 from ai_engineering_foundations.report import create_markdown_report
@@ -124,6 +125,7 @@ def train_repository_model() -> None:
     try:
         model, metrics = train_star_model(df)
         model_path = save_model(model)
+        metadata_path = save_model_metadata(metrics)
     except ValueError as error:
         print(f"Unable to train model: {error}")
         return
@@ -136,6 +138,7 @@ def train_repository_model() -> None:
     print(f"Mean absolute error: {metrics['mae']:.2f}")
     print(f"R2 score: {metrics['r2']:.2f}")
     print(f"Model saved to: {model_path}")
+    print(f"Metadata saved to: {metadata_path}")
 
 
 def analyze_github_repositories() -> None:
