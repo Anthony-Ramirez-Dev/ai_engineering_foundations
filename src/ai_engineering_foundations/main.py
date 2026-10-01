@@ -1,6 +1,7 @@
 from requests import RequestException
 
 from ai_engineering_foundations import greet
+from ai_engineering_foundations.visualization import create_language_chart
 
 
 def show_github_profile() -> None:
@@ -69,6 +70,7 @@ def analyze_github_repositories() -> None:
 
     df = repositories_to_dataframe(repositories)
     summary = summarize_repositories(df)
+    chart_path = create_language_chart(df)
 
     print()
     print("Repository Analysis")
@@ -77,3 +79,4 @@ def analyze_github_repositories() -> None:
     print(f"Total stars: {summary['total_stars']}")
     print(f"Total forks: {summary['total_forks']}")
     print(f"Top language: {summary['top_language']}")
+    print(f"Chart saved to: {chart_path}")
