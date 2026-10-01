@@ -12,6 +12,9 @@ def repositories_to_dataframe(repositories: list[dict]) -> pd.DataFrame:
                 "stars": repo["stargazers_count"],
                 "forks": repo["forks_count"],
                 "open_issues": repo["open_issues_count"],
+                "size": repo.get("size", 0),
+                "archived": repo.get("archived", False),
+                "has_issues": repo.get("has_issues", False),
                 "url": repo["html_url"],
             }
         )

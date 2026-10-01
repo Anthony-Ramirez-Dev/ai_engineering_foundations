@@ -30,7 +30,8 @@ def main() -> None:
     print("1. Greeting")
     print("2. GitHub profile lookup")
     print("3. GitHub repository analysis")
-    print("4. Exit")
+    print("4. Train repository ML model")
+    print("5. Exit")
 
     choice = input("Choose an option: ").strip()
 
@@ -42,6 +43,8 @@ def main() -> None:
     elif choice == "3":
         analyze_github_repositories()
     elif choice == "4":
+        train_repository_model()
+    elif choice == "5":
         print("Goodbye!")
     else:
         print("Invalid option.")
@@ -58,6 +61,33 @@ from ai_engineering_foundations.github_client import (
     get_github_profile,
     get_github_repositories,
 )
+from ai_engineering_foundations.ml import train_star_model
+
+
+def train_repository_model() -> None:
+    username = input("GitHub username for training data: ").strip()
+
+    try:
+        repositories = get_github_repositories(username)
+    except RequestException as error:
+        print(f"Unable to retrieve repositories: {error}")
+        return
+
+    df = repositories_to_dataframe(repositories)
+
+    try:
+        _, metrics = train_star_model(df)
+    except ValueError as error:
+        print(f"Unable to train model: {error}")
+        return
+
+    print()
+    print("Machine Learning Results")
+    print("------------------------")
+    print(f"Training samples: {metrics['training_samples']}")
+    print(f"Testing samples: {metrics['testing_samples']}")
+    print(f"Mean absolute error: {metrics['mae']:.2f}")
+    print(f"R2 score: {metrics['r2']:.2f}")
 
 
 def analyze_github_repositories() -> None:
