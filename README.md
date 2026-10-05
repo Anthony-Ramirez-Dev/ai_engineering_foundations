@@ -26,6 +26,12 @@ The project is also used as a hands-on environment for learning professional Pyt
 - Code quality checks with Ruff
 - Dependency management with uv
 - Continuous integration with GitHub Actions
+- Random Forest model for repository star prediction
+- Training evaluation with mean absolute error and R2
+- Saved model artifacts and versioned metadata
+- Metadata validation before prediction
+- Prediction input validation
+- Feature importance output
 
 ## Tech Stack
 
@@ -54,13 +60,13 @@ ai-engineering-foundations/
 │       ├── analysis.py
 │       ├── github_client.py
 │       ├── main.py
+│       ├── ml.py
 │       ├── report.py
 │       └── visualization.py
 ├── tests/
-│   ├── test_analysis.py
 │   ├── test_github_client.py
 │   ├── test_greet.py
-│   ├── test_report.py
+│   ├── test_ml.py
 │   └── test_visualization.py
 ├── .gitignore
 ├── .python-version
@@ -74,8 +80,8 @@ ai-engineering-foundations/
 Clone the repository:
 
 ```bash
-git clone https://github.com/anthonyramirez82214-alt/ai-engineering-foundations.git
-cd ai-engineering-foundations
+git clone https://github.com/Anthony-Ramirez-Dev/ai_engineering_foundations.git
+cd ai_engineering_foundations
 ```
 
 Install the project dependencies:
@@ -98,7 +104,9 @@ The application provides options for:
 1. Greeting
 2. GitHub profile lookup
 3. GitHub repository analysis
-4. Exit
+4. Train repository ML model
+5. Predict repository stars
+6. Exit
 ```
 
 Selecting repository analysis retrieves live GitHub data and generates:
@@ -107,6 +115,86 @@ Selecting repository analysis retrieves live GitHub data and generates:
 output/github_languages.png
 output/github_report.md
 ```
+
+## Architecture
+
+```text
+GitHub REST API
+    ↓
+Repository data → pandas DataFrame
+    ├── Statistics → language chart + Markdown report
+    └── Train/test split → Random Forest model
+                              ├── Evaluation metrics
+                              ├── Feature importance
+                              └── Saved model + metadata
+
+Prediction inputs → input validation → model prediction
+```
+
+## Machine Learning Workflow
+
+Choose option 4 and enter a public GitHub username.
+Training requires at least 10 repositories.
+
+The application splits the data into 75% training and 25% testing,
+trains a Random Forest regressor, and reports evaluation metrics
+and feature importance.
+
+Training saves:
+
+```text
+models/star_predictor.joblib
+models/star_predictor_metadata.json
+```
+
+Choose option 5 to predict stars using forks, open issues,
+repository size, archived status, and whether issues are enabled.
+
+The application validates model metadata before prediction and
+rejects negative forks, open issues, and repository size.
+
+## Example Output
+
+One training run using public Microsoft repository data produced:
+
+```text
+Training samples: 75
+Testing samples: 25
+Mean absolute error: 22321.80
+R2 score: 0.52
+
+Feature Importance
+------------------
+forks: 87.4%
+size: 8.2%
+open_issues: 4.4%
+archived: 0.0%
+has_issues: 0.0%
+```
+
+Results vary with the retrieved repositories and training data.
+
+Invalid prediction input produces a message such as:
+
+```text
+Invalid input: Forks cannot be negative.
+```
+
+## Model Limitations
+
+This model is a learning exercise. Its predictions are estimates,
+and the example run's mean absolute error was about 22,322 stars.
+
+Data from one GitHub account may not represent repositories from
+other accounts. Results also depend on the repositories returned
+by the API.
+
+Feature importance describes how the trained forest uses each
+input. It does not establish causation or show whether an input
+increases or decreases predicted stars.
+
+The model uses a single train/test split. Further evaluation would
+include cross-validation and comparison with a simple baseline.
 
 ## Running Tests
 
@@ -162,6 +250,10 @@ Topics practiced include:
 - Git and GitHub workflows
 - Continuous integration
 - Code organization and maintainability
+- Train/test splitting and model evaluation
+- Model persistence and metadata validation
+- Feature importance and model limitations
+- Boundary testing and prediction input validation
 
 ## Development Workflow
 
@@ -190,7 +282,6 @@ Future development may include:
 - CSV and JSON export
 - Improved CLI design
 - GitHub API authentication
-- Machine learning features
 - AI model integration
 - Automated portfolio analysis
 - Web interface
