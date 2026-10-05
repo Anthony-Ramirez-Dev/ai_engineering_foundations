@@ -2,6 +2,7 @@ from requests import RequestException
 
 from ai_engineering_foundations import greet
 from ai_engineering_foundations.ml import (
+    get_feature_importance,
     load_model,
     load_model_metadata,
     predict_stars,
@@ -106,9 +107,6 @@ def main() -> None:
         print("Invalid option.")
 
 
-if __name__ == "__main__":
-    main()
-
 from ai_engineering_foundations.analysis import (
     repositories_to_dataframe,
     summarize_repositories,
@@ -148,6 +146,15 @@ def train_repository_model() -> None:
     print(f"Model saved to: {model_path}")
     print(f"Metadata saved to: {metadata_path}")
 
+    importance = get_feature_importance(model)
+
+    print()
+    print("Feature Importance")
+    print("------------------")
+
+    for row in importance.itertuples(index=False):
+        print(f"{row.feature}: {row.importance:.1%}")
+
 
 def analyze_github_repositories() -> None:
     username = input("GitHub username: ").strip()
@@ -172,3 +179,7 @@ def analyze_github_repositories() -> None:
     print(f"Top language: {summary['top_language']}")
     print(f"Chart saved to: {chart_path}")
     print(f"Report saved to: {report_path}")
+
+
+if __name__ == "__main__":
+    main()

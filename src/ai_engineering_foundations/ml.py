@@ -58,6 +58,17 @@ def train_star_model(df: pd.DataFrame):
     return model, metrics
 
 
+def get_feature_importance(model: RandomForestRegressor) -> pd.DataFrame:
+    importance = pd.DataFrame(
+        {
+            "feature": model.feature_names_in_,
+            "importance": model.feature_importances_,
+        }
+    )
+
+    return importance.sort_values("importance", ascending=False).reset_index(drop=True)
+
+
 def load_model_metadata(
     metadata_path: str = "models/star_predictor_metadata.json",
 ) -> dict:
