@@ -58,14 +58,18 @@ def predict_repository_stars() -> None:
         print("Forks, open issues, and size must be integers.")
         return
 
-    prediction = predict_stars(
-        model=model,
-        forks=forks,
-        open_issues=open_issues,
-        size=size,
-        archived=archived,
-        has_issues=has_issues,
-    )
+    try:
+        prediction = predict_stars(
+            model=model,
+            forks=forks,
+            open_issues=open_issues,
+            size=size,
+            archived=archived,
+            has_issues=has_issues,
+        )
+    except ValueError as error:
+        print(f"Invalid input: {error}")
+        return
 
     print()
     print("Prediction")

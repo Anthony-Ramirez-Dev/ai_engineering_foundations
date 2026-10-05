@@ -10,6 +10,7 @@ from ai_engineering_foundations.ml import (
     save_model,
     train_star_model,
     validate_model_metadata,
+    validate_prediction_inputs,
 )
 
 
@@ -157,3 +158,39 @@ def test_train_star_model():
     assert metrics["testing_samples"] == 3
     assert "mae" in metrics
     assert "r2" in metrics
+
+
+@pytest.mark.parametrize(
+    ("forks", "open_issues", "size"),
+    [
+        (2, 1, 500),
+        (0, 0, 0),
+    ],
+)
+def test_validate_prediction_inputs_accepts_valid_values(forks, open_issues, size):
+    validate_prediction_inputs(
+        forks=forks,
+        open_issues=open_issues,
+        size=size,
+    )
+
+
+@pytest.mark.parametrize(
+    ("forks", "open_issues", "size", "message"),
+    [
+        (-1, 0, 0, "Forks cannot be negative."),
+        (0, -1, 0, "Open issues cannot be negative."),
+        (0, 0, -1, "Repository size cannot be negative."),
+    ],
+)
+def test_validate_prediction_input_rejects_negative_values(
+    forks, open_issues, size, message
+):
+    with pytest.raises(ValueError) as error:
+        validate_prediction_inputs(
+            forks=forks,
+            open_issues=open_issues,
+            size=size,
+        )
+
+    assert str(error.value) == message

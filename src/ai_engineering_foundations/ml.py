@@ -59,7 +59,7 @@ def train_star_model(df: pd.DataFrame):
 
 
 def load_model_metadata(
-    metadata_path: str = "models/star_predictor.json",
+    metadata_path: str = "models/star_predictor_metadata.json",
 ) -> dict:
     path = Path(metadata_path)
 
@@ -139,6 +139,21 @@ def load_model(
     return joblib.load(path)
 
 
+def validate_prediction_inputs(
+    forks: int,
+    open_issues: int,
+    size: int,
+) -> None:
+    if forks < 0:
+        raise ValueError("Forks cannot be negative.")
+
+    if open_issues < 0:
+        raise ValueError("Open issues cannot be negative.")
+
+    if size < 0:
+        raise ValueError("Repository size cannot be negative.")
+
+
 def predict_stars(
     model: RandomForestRegressor,
     forks: int,
@@ -147,6 +162,12 @@ def predict_stars(
     archived: bool,
     has_issues: bool,
 ) -> float:
+    validate_prediction_inputs(
+        forks=forks,
+        open_issues=open_issues,
+        size=size,
+    )
+
     features = pd.DataFrame(
         [
             {
